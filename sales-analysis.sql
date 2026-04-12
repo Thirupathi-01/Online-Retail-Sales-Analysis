@@ -78,3 +78,43 @@ Insert into order_items values
 (12,1008,1),
 (15,1009,3),
 (17,1008,5);
+
+#Top selling product
+select P.product_id,P.product_name,sum(O.quantity*P.price) as total
+from order_items as O 
+join products as P on O.product_id=P.product_id
+group by P.product_id
+order by total desc;
+
+#most valuable customer
+select C.customer_id,C.customer_name,sum(OI.quantity*P.price) as total
+from Customers as C 
+join Orders as O on C.customer_id=O.customer_id 
+join Order_Items as OI on O.order_id=OI.order_id
+join Products as P on OI.product_id=P.product_id
+group by c.customer_id,C.customer_name
+order by total desc;
+
+#Monthly Revenue Calculation
+select DATE_FORMAT(O.order_date,'%Y-%m') as mon, sum(OI.quantity*P.price) as revenue
+from orders as O 
+join order_items as OI on OI.order_id=O.order_id
+join Products as P on P.product_id=OI.product_id
+group by mon
+order by mon;
+
+#Category-wise sales analysis
+select P.category,P.product_name,sum(P.price*OI.quantity) as sales
+from order_items as OI 
+join products as P on P.product_id=OI.product_id
+group by P.category,P.product_name
+order by sales desc;
+
+Insert into customers values
+(7,'Dhinesh','Chennai');
+
+#Inactive customers
+select  C.customer_id,C.customer_name,C.city
+from customers as C
+left join Orders as O on C.customer_id=O.customer_id
+where O.order_id is null;
